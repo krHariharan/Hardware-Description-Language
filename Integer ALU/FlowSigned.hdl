@@ -1,0 +1,28 @@
+//Overflow checking
+
+CHIP FlowSigned{
+    IN p[16], x, y;
+    OUT out;
+
+    PARTS:
+    //Calculating the xor and xnor of x and y
+    //Used to determine if product should be negative or positive
+    Xor(a=x, b=y, out=xor);
+    Not(in=xor, out=xnor);
+    
+    //Finding overflow for the case of positive product
+    Or4(a=p[8], b=p[9], c=p[10], d=p[11], out=t1);
+    Or4(a=p[12], b=p[13], c=p[14], d=p[15], out=t2);
+    Or4(a=t1, b=t2, c=p[7], d=false, out=por);
+    And(a=por, b=xnor, out=t5);
+
+    //Finding overflow for the case of negative product
+    And4(a=p[8], b=p[9], c=p[10], d=p[11], out=t3);
+    And4(a=p[12], b=p[13], c=p[14], d=p[15], out=t4);
+    And4(a=t3, b=t4, c=p[7], d=true, out=pand);
+    Not(in=pand, out=npand);
+    And(a=npand, b=xor, out=t6);
+
+    //Finding overall overflow
+    Or(a=t5, b=t6, out=out);
+}

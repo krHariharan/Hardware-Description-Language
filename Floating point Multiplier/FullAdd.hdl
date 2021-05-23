@@ -1,0 +1,17 @@
+//FullAdder
+
+CHIP FullAdd{
+    IN x, y, cin;
+    OUT s, cout;
+
+    PARTS:
+    //Sum bit
+    Xor(a=x, b=y, out=temps);
+    Xor(a=cin, b=temps, out=s);
+
+    //Carry bit
+    And(a=x, b=y, out=t0);
+    Xor(a=x, b=y, out=xxy);
+    And(a=cin, b=xxy, out=t1);
+    Or(a=t0, b=t1, out=cout);
+}

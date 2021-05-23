@@ -1,0 +1,43 @@
+//8bit by 8bit signed multiplier using SUMMAND ADDITION TREE method
+
+CHIP Mult8x8sign{
+    IN a[8], b[8];
+    OUT prod[8], OF;
+
+    PARTS:
+    //Propduct pair genertion from pp0 to pp6
+    AND16(a[0..7]=a, a[8]=a[7], a[9]=a[7], a[10]=a[7], a[11]=a[7], a[12]=a[7], a[13]=a[7], a[14]=a[7], a[15]=a[7], cin=b[0], r=pp0);
+    AND16(a[0]=false, a[1..8]=a, a[9]=a[7], a[10]=a[7], a[11]=a[7], a[12]=a[7], a[13]=a[7], a[14]=a[7], a[15]=a[7], cin=b[1], r=pp1);
+    AND16(a[0..1]=false, a[2..9]=a, a[10]=a[7], a[11]=a[7], a[12]=a[7], a[13]=a[7], a[14]=a[7], a[15]=a[7], cin=b[2], r=pp2);
+    AND16(a[0..2]=false, a[3..10]=a, a[11]=a[7], a[12]=a[7], a[13]=a[7], a[14]=a[7], a[15]=a[7], cin=b[3], r=pp3);
+    AND16(a[0..3]=false, a[4..11]=a, a[12]=a[7], a[13]=a[7], a[14]=a[7], a[15]=a[7], cin=b[4], r=pp4);
+    AND16(a[0..4]=false, a[5..12]=a, a[13]=a[7], a[14]=a[7], a[15]=a[7], cin=b[5], r=pp5);
+    AND16(a[0..5]=false, a[6..13]=a, a[14]=a[7], a[15]=a[7], cin=b[6], r=pp6);
+
+    //product pair pp7 generation in two parts pp70 and pp71
+    AND16(a[0]=true, a[1..15]=false, cin=b[7], r=pp70);
+    AND16(a[0..6]=false, a[7..14]=a, a[15]=a[7], cin=b[7], r=pp7t);
+    XOR16(a[0..15]=pp7t, cin=b[7], r=pp71);
+
+    //Combining the 9 terms using CSA adders
+    //Level 0 grouping
+    CSA3to2(a=pp0, b=pp1, c=pp2, sum=s00, carry=c00);
+    CSA3to2(a=pp3, b=pp4, c=pp5, sum=s01, carry=c01);
+    CSA3to2(a=pp6, b=pp70, c=pp71, sum=s02, carry=c02);
+    //Level 1 grouping
+    CSA3to2(a=s00, b=c00, c=s01, sum=s10, carry=c10);
+    CSA3to2(a=c01, b=s02, c=c02, sum=s11, carry=c11);    
+    //Level 2 grouping
+    CSA3to2(a=s10, b=c10, c=s11, sum=s20, carry=c20);
+    //Level 3 grouping
+    CSA3to2(a=s20, b=c20, c=c11, sum=s30, carry=c30);
+
+    //Overall addition to give the final 16bit product
+    AddCLA16(A=s30, B=c30, result=temp);
+
+    //Get an 8bit answer
+    Get8(in=temp, out=prod);
+
+    //Overflow calculation
+    FlowSigned(p=temp, x=a[7], y=b[7], out=OF);
+}

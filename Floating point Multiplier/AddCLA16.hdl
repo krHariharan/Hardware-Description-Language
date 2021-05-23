@@ -1,0 +1,16 @@
+//Adding two signed 16 bit numbers
+//Uses a 4 bit CLA Adder (with Higher Level Propagate and Generate terms)
+
+CHIP AddCLA16{
+    IN A[16], B[16];//Input two 16bit numbers
+    OUT result[16];//Output result
+
+    //Input two 16bit numbers A[16] and B[16] 
+
+    PARTS:
+    //Use 4 CLA adder circuits to get the final result
+    CLA4(x=A[0..3], y=B[0..3], cin=false, sum=result[0..3], cout=carry4);
+    CLA4(x=A[4..7], y=B[4..7], cin=carry4, sum=result[4..7], cout=carry8);
+    CLA4(x=A[8..11], y=B[8..11], cin=carry8, sum=result[8..11], cout=carry12);
+    CLA4(x=A[12..15], y=B[12..15], cin=carry12, sum=result[12..15], cout=carry16);
+}

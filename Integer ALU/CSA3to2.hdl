@@ -1,0 +1,30 @@
+//Carry Save Adder 16bit
+
+CHIP CSA3to2{
+    IN a[16], b[16], c[16];
+    OUT sum[16], carry[16];
+
+    PARTS:
+    //Implementation of the carry save adder 
+    //Reduces addition of three operands into the addition of a sumbit number and carrybit number
+	//Implemented using a set of 16 parallel full adders
+
+    Or(a=false, b=false, out=carry[0]);
+    FullAdd(x=a[0], y=b[0], cin=c[0], s=sum[0], cout=carry[1]);
+	FullAdd(x=a[1], y=b[1], cin=c[1], s=sum[1], cout=carry[2]);
+	FullAdd(x=a[2], y=b[2], cin=c[2], s=sum[2], cout=carry[3]);
+	FullAdd(x=a[3], y=b[3], cin=c[3], s=sum[3], cout=carry[4]);
+	FullAdd(x=a[4], y=b[4], cin=c[4], s=sum[4], cout=carry[5]);
+	FullAdd(x=a[5], y=b[5], cin=c[5], s=sum[5], cout=carry[6]);
+	FullAdd(x=a[6], y=b[6], cin=c[6], s=sum[6], cout=carry[7]);
+	FullAdd(x=a[7], y=b[7], cin=c[7], s=sum[7], cout=carry[8]);
+	FullAdd(x=a[8], y=b[8], cin=c[8], s=sum[8], cout=carry[9]);
+	FullAdd(x=a[9], y=b[9], cin=c[9], s=sum[9], cout=carry[10]);
+	FullAdd(x=a[10], y=b[10], cin=c[10], s=sum[10], cout=carry[11]);
+	FullAdd(x=a[11], y=b[11], cin=c[11], s=sum[11], cout=carry[12]);
+	FullAdd(x=a[12], y=b[12], cin=c[12], s=sum[12], cout=carry[13]);
+	FullAdd(x=a[13], y=b[13], cin=c[13], s=sum[13], cout=carry[14]);
+	FullAdd(x=a[14], y=b[14], cin=c[14], s=sum[14], cout=carry[15]);
+	FullAdd(x=a[15], y=b[15], cin=c[15], s=sum[15], cout=dontcare);
+
+}

@@ -1,0 +1,87 @@
+// File Name: HackCPU.hdl
+// This is a file representing the Hack CPU of the computer for the simulation.
+// This uses a HACK ALU made in the previous lab (Lab 07)
+// The model followed here is identical to the book
+
+
+/***************************************************************************************************************************
+*   Implementation of the Hack CPU
+*   ******************************
+*
+*   Input - inM and instruction (16 bits each), reset signal
+*	Functions of input:
+*	1)	inM			- M value input from the memory
+*					- Content of RAM[A]
+*
+*	2)	instruction - instruction for execution
+*					- obtained from ROM
+*					- if instruction[15] == 0 , ADDRESS or A-INSTRUCTION
+*						->	instruction[14] to instruction[0] - value/address to store/read
+*
+*					- if instruction[15] == 1 , COMPUTE or C-INSTRUCTION
+*						->	instruction[14] and instruction[13] are preset to 1
+*
+*						->	instruction[12]: select line for MUX2
+*							if instruction[12]==1 takes ALU input from MEMORY
+*							if instruction[12]==0 takes ALU input from ARegister
+*
+*						->	instruction[11...6]: CONTROL SIGNALS of ALU
+*							instruction[11] to [6] respectively map to zx, nx, zy, ny, f, no
+*
+*						->	instruction[5...3]: destination control signals
+*							instruction[5]: whether (==1) or not (==0) to send to ARegister
+*							instruction[4]: whether (==1) or not (==0) to send to DRegister
+*							instruction[3]: whether (==1) or not (==0) to send to MEMORY
+*
+*						->	instruction[2...0]: destination control signals
+*							instruction[2]: whether (==1) or not (==0) to jump if LESS THAN
+*							instruction[1]: whether (==1) or not (==0) to jump to EQUAL TO
+*							instruction[0]: whether (==1) or not (==0) to jump to GREATER THAN
+*
+*	3)	reset		- bit used to signal if current program is to be restarted or continued
+*					- if reset == 1 restart program
+*					- if reset == 0 continue execution
+*   
+*   Output - outM (16 bit), addressM and pc (15 bit), writeM signal
+*   Functions output:
+*   1)  outM		- M value output
+*					- can be written into memory or fed back into CP depending on value of writeM
+*	2)	writeM		- control signal to decide if result is written into memory
+*					- if writeM == 1 write outM into memory 
+*					- else if writeM == 0 load value from memory
+*	3)	addressM	- address in memory to which outM should be written
+*					- 15 bit address of which 6 bits are required by memory (64 x 16 bit memory)
+*	4)	pc			- next instruction address (15 bit address)
+*					- used to load the next instruction from the instruction ROM
+*	
+*   Note: ALL UNSPECIFIED CHIPS USED ARE BUILT IN CHIPS IN HDL AND NAND2TETRIS
+*   
+****************************************************************************************************************************/
+
+CHIP HackCPU {
+
+    IN  inM[16], instruction[16], reset;	// INPUTS
+	OUT outM[16], writeM, addressM[15], pc[15];	// OUTPUTS
+
+    PARTS:
+    
+	Mux16(a=a, b=inM, sel=instruction[12], out=ALU2);
+	HackALU(x=d, y=ALU2, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outM, out=calc, zr=zr, ng=ng);
+	And(a=instruction[15], b=instruction[4], out=DLoad);
+	DRegister(in=calc, load=DLoad, out=d);
+	Mux16(a=instruction, b=calc, sel=instruction[15], out=Ain);
+	And(a=instruction[15], b=instruction[5], out=ALoad1);
+	Not(in=instruction[15], out=ALoad2);
+	Or(a=ALoad1, b=ALoad2, out=ALoad);
+	ARegister(in=Ain, load=ALoad, out=a, out[0..14]=addressM);
+	And(a=instruction[15], b=instruction[3], out=writeM);
+	And(a=instruction[2], b=ng, out=j1);
+	And(a=instruction[1], b=zr, out=j2);
+	Or(a=ng, b=zr, out=nlnot);
+	Not(in=nlnot, out=nl);
+	And(a=instruction[0], b=nl, out=j3);	
+	Or3(a=j1, b=j2, c=j3, out=jmp1);
+	And(a=jmp1, b=instruction[15], out=jmp);
+	Not(in=jmp, out=inc);
+	PC(in=a, load=jmp, inc=inc, reset=reset, out[0..14]=pc);
+}

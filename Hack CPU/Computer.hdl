@@ -1,0 +1,31 @@
+// File name: Computer.hdl
+// A file to represent a Hack Computer in the simulation.
+// This Hack Computer uses a Hack Alu from Lab 07 and a Hack CPU made for this lab.
+// This computer has a memory of 64 X 16 bits.
+// Unlike in the book, the Screen and Keyboard have not been incorporated in this Hack Computer 
+
+/**
+ * The HACK computer, including CPU, ROM and RAM.
+ * When reset is 0, the program stored in the computer's ROM executes.
+ * When reset is 1, the execution of the program restarts. 
+ * Thus, to start a program's execution, reset must be pushed "up" (1)
+ * and "down" (0). From this point onward the user is at the mercy of 
+ * the software.
+ */
+
+CHIP Computer {
+
+    IN reset;
+
+    PARTS:
+    //ROM32k is an internal chip acting as a substitute for ROM. 
+    //It is a bundle of 32k registers each of 16 bit length.
+    ROM32K(address=pc, out=instruction);    
+
+    //calling HACK CPU for computing required steps 
+    HackCPU(inM=input, instruction=instruction, reset=reset, outM=output, writeM=load, addressM=address, pc=pc);
+    
+    //Performing the output and input through memory(RAM).
+    // Memory is a collection of registers having unique adress values.
+    Memory(in=output, load=load, address=address, out=input);   
+}

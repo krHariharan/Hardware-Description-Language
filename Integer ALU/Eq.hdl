@@ -1,0 +1,18 @@
+// Chip to check for equality of x and y
+CHIP Eq {
+	IN x[8], y[8];
+	OUT eq;
+	
+	PARTS:
+	Xnor(a=x[0], b=y[0], out=z0);
+	Xnor(a=x[1], b=y[1], out=z1);
+	Xnor(a=x[2], b=y[2], out=z2);
+	Xnor(a=x[3], b=y[3], out=z3);
+	Xnor(a=x[4], b=y[4], out=z4);
+	Xnor(a=x[5], b=y[5], out=z5);
+	Xnor(a=x[6], b=y[6], out=z6);
+	Xnor(a=x[7], b=y[7], out=z7);
+	And4(a=z0, b=z1, c=z2, d=z3, out=a0);
+	And3(a=a0, b=z4, c=z5, out=a1);
+	And3(a=a1, b=z6, c=z7, out=eq);
+}

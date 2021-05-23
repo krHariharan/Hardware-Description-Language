@@ -1,0 +1,17 @@
+//Hdl program to multiply 2 IEE754 floating point numbers
+
+CHIP FloatMultiplier{
+    IN A[16], B[16];
+    OUT Product[16], OF;
+
+    PARTS:
+    Xor(a=A[15], b=B[15], out=Product[15]);
+    ADD8(A=A[7..14], B[0]=true, B[1]=true, B[2]=true, B[3]=true, B[4]=true, B[5]=true, B[6]=true, B[7] =false, control=true, signed=false, result=temp, OF=ignore);
+    ADD8(A=temp, B=B[7..14], control=false, signed=false, result=temp0, OF=ignore0);
+
+    Mult8x8usign(a[7]=true, a[0..6]=A[0..6], b[7]=true, b[0..6]=B[0..6], prod=tempMul);
+    Extract(in=tempMul, b=tempMul15, out=resfin);
+    ADD8(A=temp0, B[1..7]=false, B[0]=tempMul15, signed=false, control=false, result=Product[7..14], OF=OF);
+
+    Get8(in=resfin, out=Product[0..6]);
+}

@@ -1,0 +1,42 @@
+// File Name: Memory.hdl
+// This is a file representing the memory of the computer for the simulation.
+// Acts as a MEMORY UNIT of the computer
+// This uses a built-in RAM64 chip
+// This model does not incorporate the screen or keyboard
+
+
+/***************************************************************************************************************************
+*   Implementation of the Memory Unit
+*   *********************************
+*
+*   Input - in (16 bits), address (15 bit), load signal
+*	Functions of input:
+*	1)	in		- output of the CPU after operation
+*				- outM of HackCPU.hdl
+*	2)	address - address to load the in value into
+*				- addressM of HackCPU.hdl
+*	3)	load	- controls whether or not to load in into memory
+*				- if load == 1 writes in into address
+*               - Write: Mem[address(t)](t+1) = in(t)
+*				- if reset == 0 reads from address
+*               - Read: out(t) = Mem[address(t)](t)
+*   
+*   Output - out (16 bit)
+*   Based on load, out returns appropriate values
+*	
+*   Note: ALL UNSPECIFIED CHIPS USED ARE BUILT IN CHIPS IN HDL AND NAND2TETRIS
+*   
+****************************************************************************************************************************/
+
+CHIP Memory {
+
+    IN  in[16], //what to write
+        load, //write enable bit
+        address[15]; //where to write or read.
+
+    OUT out[16];    // value at a given adress. 
+
+	PARTS:
+    //using an inbuilt RAM to perform necessary write and Read operations.
+	RAM64(in=in, load=load, address=address[0..5], out=out); 
+}

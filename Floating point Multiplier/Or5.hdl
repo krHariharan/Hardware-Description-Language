@@ -1,0 +1,12 @@
+//Code for Or gate with fan-in parameter 5
+
+CHIP Or5{
+    IN a,b,c,d,e;
+    OUT out;
+
+    PARTS:
+    Or(a=a, b=b, out=ab);
+    Or(a=c, b=d, out=cd);
+    Or(a=cd, b=e, out=cde);
+    Or(a=ab, b=cde, out=out);
+}

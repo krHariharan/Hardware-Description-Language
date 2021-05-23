@@ -1,0 +1,35 @@
+//Selecting x0 if s=0, else x1 if s=1
+CHIP Mux2to1{
+	IN s, x0[8], x1[8];
+	OUT z[8];
+	
+	PARTS:
+	Not(in=s, out=nots);
+	
+	And(a=nots, b=x0[0], out= z00);
+	And(a=nots, b=x0[1], out= z01);
+	And(a=nots, b=x0[2], out= z02);
+	And(a=nots, b=x0[3], out= z03);
+	And(a=nots, b=x0[4], out= z04);
+	And(a=nots, b=x0[5], out= z05);
+	And(a=nots, b=x0[6], out= z06);
+	And(a=nots, b=x0[7], out= z07);
+	
+	And(a=s, b=x1[0], out= z10);
+	And(a=s, b=x1[1], out= z11);
+	And(a=s, b=x1[2], out= z12);
+	And(a=s, b=x1[3], out= z13);
+	And(a=s, b=x1[4], out= z14);
+	And(a=s, b=x1[5], out= z15);
+	And(a=s, b=x1[6], out= z16);
+	And(a=s, b=x1[7], out= z17);
+	
+	Or(a=z00, b=z10, out=z[0]);
+	Or(a=z01, b=z11, out=z[1]);
+	Or(a=z02, b=z12, out=z[2]);
+	Or(a=z03, b=z13, out=z[3]);
+	Or(a=z04, b=z14, out=z[4]);
+	Or(a=z05, b=z15, out=z[5]);
+	Or(a=z06, b=z16, out=z[6]);
+	Or(a=z07, b=z17, out=z[7]);
+}

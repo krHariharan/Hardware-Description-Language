@@ -1,0 +1,10 @@
+//Code for And gate with fan-in parameter 3
+
+CHIP And3{
+    IN a, b, c;
+    OUT out;
+
+    PARTS:
+    And(a=a, b=b, out=temp);
+    And(a=temp, b=c, out=out);
+}

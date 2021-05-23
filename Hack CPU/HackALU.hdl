@@ -1,0 +1,70 @@
+// File Name: HackALU.hdl
+// This is a file representing the Hack ALU of the computer for the simulation.
+// The model followed here is identical to the book
+
+/***************************************************************************************************************************
+*   Implementation of the Hack ALU
+*   ******************************
+*
+*   Input - x and y (16 bits each)
+*   
+*   Control Signals - nx, zx, ny, zy, f, no
+*   Functions of control signals:   (INPUT)
+*   1)  zx  - if 1 set x = 0        //constant
+*   2)  nx  - if 1 set x = !x       //bitwise NOT or complement
+*   3)  zy  - if 1 set y = 0        //constant
+*   4)  ny  - if 1 set y = !y       //bitwise NOT or complement
+*   5)  f   - if 1 set out = x+y    //ADDITION 
+*           - if 0 set out = x&y    //bitwise AND
+*   6)  no  - if 1 set out = !out   //bitwise NOT or complement
+*   
+*   Status bits - zr and ng
+*   Functions of status bits:       (OUTPUT)
+*   1)  zr  - if out==0 set zr = 1
+*           - else set zr = 0
+*   2)  ng  - if out<0 set ng = 1
+*           - else set ng = 0
+*   
+*   The ALU logic uses a combination of the values of the 6 control signals to carry out the following 18 computations
+*   x+y, x-y, y-x, 0, 1, -1, x, y, -x, -y, !x, !y, x+1, y+1, x-1, y-1, x&y, x|y
+*   on two 16-bit inputs
+*
+*   Note: ALL CHIPS USED ARE BUILT IN CHIPS IN HDL and nand2tetris
+*   
+****************************************************************************************************************************/
+
+CHIP HackALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, nx, zy, ny, f, no;  //control signals
+
+    OUT 
+        out[16], // 16-bit output
+        zr, ng;  //status bits
+
+    PARTS:
+    //Calculate the values of p & q (here x2 and y2) using 2 MUX 
+    Mux16(a = x, b = false, sel = zx, out = x1);
+    Mux16(a = y, b = false, sel = zy, out = y1);
+
+    Not16(in = x1, out = notx1);
+    Not16(in = y1, out = noty1);
+    
+    Mux16(a = x1, b = notx1, sel = nx, out = x2);
+    Mux16(a = y1, b = noty1, sel = ny, out = y2);
+    
+    //ADD or AND selection
+    Add16(a = x2, b = y2, out = addxy);
+    And16(a = x2, b = y2, out = andxy);
+    Mux16(a = andxy, b = addxy, sel = f, out = temp1);
+    
+    //Finding value of ng
+    Not16(in = temp1, out = nottemp1);
+    Mux16(a = temp1, b = nottemp1, sel = no, out[15] = ng, out[0..7] = temp2, out[8..15] = temp3, out = out);
+    
+    //Finding value of zr
+    Or8Way(in = temp2, out = zr1);
+    Or8Way(in = temp3, out = zr2);
+    Or(a = zr1, b = zr2, out = zr3);
+    Not(in = zr3, out = zr);
+}

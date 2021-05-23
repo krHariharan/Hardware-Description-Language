@@ -1,0 +1,12 @@
+//Code for And gate with fan-in parameter 5
+
+CHIP And5{
+    IN a,b,c,d,e;
+    OUT out;
+
+    PARTS:
+    And(a=a, b=b, out=ab);
+    And(a=c, b=d, out=cd);
+    And(a=cd, b=e, out=cde);
+    And(a=ab, b=cde, out=out);
+}

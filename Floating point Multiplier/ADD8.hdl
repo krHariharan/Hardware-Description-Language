@@ -1,0 +1,23 @@
+//Adding or subtracting two signed or unsigned 8 bit numbers
+
+CHIP ADD8{
+    IN A[8], B[8], control, signed;
+    OUT result[8], OF;//Output result and overflow
+
+    //Input two 16bit numbers A[16] and B[16]
+    //control bit - to select between addition(0) and subtraction(1) operations
+    //signed bit - to select if integer is signed(1) or not(0) 
+
+    PARTS:
+    CLA4(x=A[0..3], y=B[0..3], cin=control, ctrl=control, sum=result[0..3], cout=carry4, cout2=carry3);
+    CLA4(x=A[4..7], y=B[4..7], cin=carry4, ctrl=control, sum=result[4..7], cout=carry8, cout2=carry7);
+
+    Xor(a=carry7, b=carry8, out=temp0);
+	Not(in=signed, out=notsigned);
+	And(a=temp0, b=signed, out=temp1);
+	
+    Xor(a=control, b=carry8, out=temp2);
+	And(a=notsigned, b=temp2, out=temp3);
+	
+	Or(a=temp1, b=temp3, out=OF);   
+}

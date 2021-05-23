@@ -1,0 +1,56 @@
+// Code for a chip which carries out CLA addition of two 4bit numbers
+
+CHIP CLA4Norm{
+    IN x[4], y[4], cin, ctrl; //Imput two 4bit numbers, a carry variable and a control variable
+    OUT sum[4], cout, cout2; //Output all sum and carry bits
+
+    PARTS:
+    //Take Xor of second operand with control variable to effect selection of operation
+    Xor(a=y[0], b=ctrl, out=temp0);
+    Xor(a=y[1], b=ctrl, out=temp1);
+    Xor(a=y[2], b=ctrl, out=temp2);
+    Xor(a=y[3], b=ctrl, out=temp3);
+
+    //Calculating propagate terms
+    Xor(a=x[0], b=temp0, out=p0);
+    Xor(a=x[1], b=temp1, out=p1);
+    Xor(a=x[2], b=temp2, out=p2);
+    Xor(a=x[3], b=temp3, out=p3);
+
+    //Calculating the generate terms
+    And(a=x[0], b=temp0, out=g0);
+    And(a=x[1], b=temp1, out=g1);
+    And(a=x[2], b=temp2, out=g2);
+    And(a=x[3], b=temp3, out=g3);
+
+    //Calculate c1 
+    And(a=p0, b=cin, out=t0);
+    Or(a=t0, b=g0, out=c1);
+
+    //Calculate c2 
+    And3(a=p1, b=p0, c=cin, out=t10);
+    And(a=p1, b=g0, out=t11);
+    Or3(a=t10, b=t11, c=g1, out=c2);
+
+    //Calculate c3 and output cout2
+    And4(a=p2, b=p1, c=p0, d=cin, out=t20);
+    And3(a=p2, b=p1, c=g0, out=t21);
+    And(a=p2, b=g1, out=t22);
+    Or4(a=t20, b=t21, c=t22, d=g2, out=c3);
+
+    Not(in=c3, out=notc3);
+    Not(in=notc3, out=cout2);
+
+    //Calculate c4
+    And5(a=p3, b=p2, c=p1, d=p0, e=cin, out=t30);
+    And4(a=p3, b=p2, c=p1, d=g0, out=t31);
+    And3(a=p3, b=p2, c=g1, out=t32);
+    And(a=p3, b=g2, out=t33);
+    Or5(a=t30, b=t31, c=t32, d=t33, e=g3, out=cout);
+
+    //Calculating the sum bits
+    Xor(a=p0, b=cin, out=sum[0]);
+    Xor(a=p1, b=c1, out=sum[1]);
+    Xor(a=p2, b=c2, out=sum[2]);
+    Xor(a=p3, b=c3, out=sum[3]);
+}

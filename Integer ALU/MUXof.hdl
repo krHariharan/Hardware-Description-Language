@@ -1,0 +1,21 @@
+// Modified 4 to 1 MUX to select correct overflow bit
+
+CHIP MUXof {
+	IN of0, of1, of2, of3, op[3];
+	OUT of;
+	
+	PARTS:
+	Not(in=op[0], out=notop0);
+	Not(in=op[1], out=notop1);
+	
+	//Caluculating possible overflow
+	And3(a=notop0, b=notop1, c=of0, out=ofadd);
+	And3(a=op[0], b=notop1, c=of1, out=ofsub);
+	And3(a=notop0, b=op[1], c=of2, out=ofumul);
+	And3(a=op[0], b=op[1], c=of3, out=ofimul);
+	
+	Or4(a=ofadd, b=ofsub, c=ofumul, d=ofimul, out=of4);
+	
+	//if op[2] is zero, then one of first 4 operations execute and no overflow0
+	And(a=of4, b=op[2], out=of);
+}

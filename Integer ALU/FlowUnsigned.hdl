@@ -1,0 +1,12 @@
+//Overflow checking
+
+CHIP FlowUnsigned{
+    IN p[16];
+    OUT out;
+
+    PARTS:
+    //Finding the overflow using Or
+    Or4(a=p[15], b=p[14], c=p[13], d=p[12], out=t0);
+    Or4(a=p[8], b=p[9], c=p[10], d=p[11], out=t1);
+    Or(a=t0, b=t1, out=out);
+}

@@ -1,0 +1,86 @@
+//Adding two signed 16 bit numbers
+//Uses a 4 bit CLA Adder (with Higher Level Propagate and Generate terms)
+
+CHIP AddCLA16{
+    IN A[16], B[16];//Input two 16bit numbers
+    OUT result[16];//Output result
+
+    //Input two 16bit numbers A[16] and B[16] 
+
+    PARTS:
+    //Calculating propagate terms (Only till p12 are needed since carry16 doesnt have to be calculated)
+    Xor(a=A[0], b=B[0], out=p0);
+    Xor(a=A[1], b=B[1], out=p1);
+    Xor(a=A[2], b=B[2], out=p2);
+    Xor(a=A[3], b=B[3], out=p3);
+    Xor(a=A[4], b=B[4], out=p4);
+    Xor(a=A[5], b=B[5], out=p5);
+    Xor(a=A[6], b=B[6], out=p6);
+    Xor(a=A[7], b=B[7], out=p7);
+    Xor(a=A[8], b=B[8], out=p8);
+    Xor(a=A[9], b=B[9], out=p9);
+    Xor(a=A[10], b=B[10], out=p10);
+    Xor(a=A[11], b=B[11], out=p11);
+
+    //Calculating the generate terms (Only till p12 are needed since carry16 doesnt have to be calculated)
+    And(a=A[0], b=B[0], out=g0);
+    And(a=A[1], b=B[1], out=g1);
+    And(a=A[2], b=B[2], out=g2);
+    And(a=A[3], b=B[3], out=g3);
+    And(a=A[4], b=B[4], out=g4);
+    And(a=A[5], b=B[5], out=g5);
+    And(a=A[6], b=B[6], out=g6);
+    And(a=A[7], b=B[7], out=g7);
+    And(a=A[8], b=B[8], out=g8);
+    And(a=A[9], b=B[9], out=g9);
+    And(a=A[10], b=B[10], out=g10);
+    And(a=A[11], b=B[11], out=g11);
+
+
+    //Calculating the higher order propagate terms (only till P2 needed)
+    And4(a=p0, b=p1, c=p2, d=p3, out=P0);
+    And4(a=p4, b=p5, c=p6, d=p7, out=P1);
+    And4(a=p8, b=p9, c=p10, d=p11, out=P2);
+
+    //Calculating the higher order generate terms (only till G2 needed)
+    //Calculating G0
+    And4(a=p3, b=p2, c=p1, d=g0, out=t30);
+    And3(a=p3, b=p2, c=g1, out=t31);
+    And(a=p3, b=g2, out=t32);
+    Or4(a=t30, b=t31, c=t32, d=g3, out=G0);
+    
+    //Calculating G1
+    And4(a=p7, b=p6, c=p5, d=g4, out=t70);
+    And3(a=p7, b=p6, c=g5, out=t71);
+    And(a=p7, b=g6, out=t72);
+    Or4(a=t70, b=t71, c=t72, d=g7, out=G1);
+
+    //Calculating G2
+    And4(a=p11, b=p10, c=p9, d=g8, out=t110);
+    And3(a=p11, b=p10, c=g9, out=t111);
+    And(a=p11, b=g10, out=t112);
+    Or4(a=t110, b=t111, c=t112, d=g11, out=G2);
+
+    //Calculating required carry bits    
+    //Calculate carry4
+    And(a=P0, b=false, out=T30);
+    Or(a=T30, b=G0, out=carry4);
+    
+    //Calculate carry8
+    And3(a=P1, b=P0, c=false, out=T70);
+    And(a=P1, b=G0, out=T71);
+    Or5(a=T70, b=T71, c=G1, out=carry8);
+    
+    //Calculate carry12
+    And4(a=P2, b=P1, c=P0, d=false, out=T110);
+    And3(a=P2, b=P1, c=G0, out=T111);
+    And(a=P2, b=G1, out=T112);
+    Or5(a=T110, b=T111, c=T112, d=G2, out=carry12);
+
+
+    //Use 4 CLA adder circuits to get the final result
+    CLA4Norm(x=A[0..3], y=B[0..3], cin=false, ctrl=false, sum=result[0..3], cout=c4, cout2=c3);
+    CLA4Norm(x=A[4..7], y=B[4..7], cin=carry4, ctrl=false, sum=result[4..7], cout=c8, cout2=c7);
+    CLA4Norm(x=A[8..11], y=B[8..11], cin=carry8, ctrl=false, sum=result[8..11], cout=c12, cout2=c11);
+    CLA4Norm(x=A[12..15], y=B[12..15], cin=carry12, ctrl=false, sum=result[12..15], cout=c16, cout2=c15);
+}

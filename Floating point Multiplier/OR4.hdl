@@ -1,0 +1,11 @@
+//Or with fanin 4
+
+CHIP OR4{
+    IN a, b, c, d;
+    OUT out;
+
+    PARTS:
+    Or(a=a, b=b, out=temp0);
+    Or(a=c, b=d, out=temp1);
+    Or(a=temp0, b=temp1, out=out);
+}

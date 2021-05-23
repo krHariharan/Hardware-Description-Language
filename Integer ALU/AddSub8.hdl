@@ -1,0 +1,28 @@
+//Adding or subtracting two signed or unsigned 16 bit numbers
+//Uses a 4 bit CLA Adder (without Higher Level Propagate and Generate terms)
+
+CHIP AddSub8{
+    IN A[8], B[8], control, signed;
+    OUT result[8], OF;//Output result and overflow
+
+    //Input two 8bit numbers A[8] and B[8]
+    //control bit - to select between addition(0) and subtraction(1) operations
+    //signed bit - to select if integer is signed(1) or not(0) 
+
+    PARTS:
+    //Use 4 CLA adder circuits to get the final result
+    CLA4Norm(x=A[0..3], y=B[0..3], cin=control, ctrl=control, sum=result[0..3], cout=carry4, cout2=carry3);
+    CLA4Norm(x=A[4..7], y=B[4..7], cin=carry4, ctrl=control, sum=result[4..7], cout=carry8, cout2=carry7);
+ 
+    //Overflow for signed occurs iff carry(n) != carry(n-1)
+    //Overflow for unsigned integers occurs iff carry(n0) == 1
+
+    Xor(a=carry7, b=carry8, out=temp0);
+	Not(in=signed, out=notsigned);
+	And(a=temp0, b=signed, out=temp1);
+	
+    Xor(a=control, b=carry8, out=temp2);
+	And(a=notsigned, b=temp2, out=temp3);
+	
+	Or(a=temp1, b=temp3, out=OF);
+}

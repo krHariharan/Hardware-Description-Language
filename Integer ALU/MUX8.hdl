@@ -1,0 +1,67 @@
+// 8 bit 4 to 1 MUX
+CHIP MUX8 {
+	IN x0[8], x1[8], x2[8], x3[8], s[2];
+	OUT z[8];
+	
+	PARTS:
+	Not(in=s[0], out=nots0);
+	Not(in=s[1], out=nots1);
+
+	//Calculating possible outputs for bit 0	
+	And3(a=nots0, b=nots1, c=x0[0], out=temp00); //And3 is a custom and-gate with fan capacity 3 
+    And3(a=s[0], b=nots1, c=x1[0], out=temp01);    
+    And3(a=nots0, b=s[1], c=x2[0], out=temp02);
+    And3(a=s[0], b=s[1], c=x3[0], out=temp03);
+	
+	//Calculating possible outputs for bit 1	
+	And3(a=nots0, b=nots1, c=x0[1], out=temp10);
+    And3(a=s[0], b=nots1, c=x1[1], out=temp11);    
+    And3(a=nots0, b=s[1], c=x2[1], out=temp12);
+    And3(a=s[0], b=s[1], c=x3[1], out=temp13);
+
+	//Calculating possible outputs for bit 2
+	And3(a=nots0, b=nots1, c=x0[2], out=temp20);
+    And3(a=s[0], b=nots1, c=x1[2], out=temp21);    
+    And3(a=nots0, b=s[1], c=x2[2], out=temp22);
+    And3(a=s[0], b=s[1], c=x3[2], out=temp23);
+	
+	//Calculating possible outputs for bit 3
+	And3(a=nots0, b=nots1, c=x0[3], out=temp30);
+    And3(a=s[0], b=nots1, c=x1[3], out=temp31);    
+    And3(a=nots0, b=s[1], c=x2[3], out=temp32);
+    And3(a=s[0], b=s[1], c=x3[3], out=temp33);
+	
+	//Calculating possible outputs for bit 4
+	And3(a=nots0, b=nots1, c=x0[4], out=temp40);
+    And3(a=s[0], b=nots1, c=x1[4], out=temp41);    
+    And3(a=nots0, b=s[1], c=x2[4], out=temp42);
+    And3(a=s[0], b=s[1], c=x3[4], out=temp43);
+	
+	//Calculating possible outputs for bit 5
+	And3(a=nots0, b=nots1, c=x0[5], out=temp50);
+    And3(a=s[0], b=nots1, c=x1[5], out=temp51);    
+    And3(a=nots0, b=s[1], c=x2[5], out=temp52);
+    And3(a=s[0], b=s[1], c=x3[5], out=temp53);
+	
+	//Calculating possible outputs for bit 6
+	And3(a=nots0, b=nots1, c=x0[6], out=temp60);
+    And3(a=s[0], b=nots1, c=x1[6], out=temp61);    
+    And3(a=nots0, b=s[1], c=x2[6], out=temp62);
+    And3(a=s[0], b=s[1], c=x3[6], out=temp63);
+	
+	//Calculating possible outputs for bit 7
+	And3(a=nots0, b=nots1, c=x0[7], out=temp70);
+    And3(a=s[0], b=nots1, c=x1[7], out=temp71);    
+    And3(a=nots0, b=s[1], c=x2[7], out=temp72);
+    And3(a=s[0], b=s[1], c=x3[7], out=temp73);
+	
+	//Summing the possible outputs together to get result
+	Or4(a=temp00, b=temp01, c=temp02, d=temp03, out=z[0]); //Or4 is a custom or-gate with fan capacity 4
+	Or4(a=temp10, b=temp11, c=temp12, d=temp13, out=z[1]);
+	Or4(a=temp20, b=temp21, c=temp22, d=temp23, out=z[2]);
+	Or4(a=temp30, b=temp31, c=temp32, d=temp33, out=z[3]);
+	Or4(a=temp40, b=temp41, c=temp42, d=temp43, out=z[4]);
+	Or4(a=temp50, b=temp51, c=temp52, d=temp53, out=z[5]);
+	Or4(a=temp60, b=temp61, c=temp62, d=temp63, out=z[6]);
+	Or4(a=temp70, b=temp71, c=temp72, d=temp73, out=z[7]);
+}

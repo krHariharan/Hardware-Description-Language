@@ -1,0 +1,9 @@
+//XNOR gate
+CHIP Xnor {
+	IN a,b;
+	OUT out;
+	
+	PARTS:
+	Xor(a=a,b=b,out=xor);
+	Not(in=xor, out=out);
+}

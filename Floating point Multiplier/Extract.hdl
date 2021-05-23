@@ -1,0 +1,15 @@
+CHIP Extract{
+    IN in[16];
+    OUT b, out[16];
+
+    PARTS:
+    Or(a=in[15], b=false, out=b);
+
+    Not(in=in[15], out=notA);
+    And(a=notA, b=in[14], out=switch);
+
+    AND16(a[0]=false, a[1..15]=in[0..14], cin=in[15], r=tempres1);
+    AND16(a[0..1]=false, a[2..15]=in[0..13], cin=switch, r=tempres2);
+
+    AddCLA16(A=tempres1, B=tempres2, result=out);
+}

@@ -1,0 +1,27 @@
+//AND 16 cross one
+
+CHIP AND16{
+    IN a[16], cin;
+    OUT r[16];
+
+    PARTS:  
+    //Code to multiply single digit with a whole number.
+    //Done bit by bit
+    
+    And(a=a[0], b=cin, out=r[0]);
+    And(a=a[1], b=cin, out=r[1]);
+    And(a=a[2], b=cin, out=r[2]);
+    And(a=a[3], b=cin, out=r[3]);
+    And(a=a[4], b=cin, out=r[4]);
+    And(a=a[5], b=cin, out=r[5]);
+    And(a=a[6], b=cin, out=r[6]);
+    And(a=a[7], b=cin, out=r[7]);
+    And(a=a[8], b=cin, out=r[8]);
+    And(a=a[9], b=cin, out=r[9]);
+    And(a=a[10], b=cin, out=r[10]);
+    And(a=a[11], b=cin, out=r[11]);
+    And(a=a[12], b=cin, out=r[12]);
+    And(a=a[13], b=cin, out=r[13]);
+    And(a=a[14], b=cin, out=r[14]);
+    And(a=a[15], b=cin, out=r[15]);
+}
